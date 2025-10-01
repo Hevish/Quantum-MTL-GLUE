@@ -72,7 +72,7 @@ class MTLModel(nn.Module):
                 out_dim = 3
                 pred_layer = nn.Sequential(
                     nn.Linear(input_dim, out_dim)
-                )
+                ) # Keep simple
             # pred_layer = nn.Sequential(
             #     nn.Dropout(dropout_rate),
             #     nn.Linear(input_dim, 512),
@@ -169,11 +169,9 @@ class MTLModel(nn.Module):
             ], dim=1)
 
             latent = self.pair_proj(pair_features)
-            # logits = pred_layer(pair_features)
         else:
             # Single sentence tasks
             sent_enc = self.encode_sentence(input1, attention_mask1, raw_texts1)
-            # logits = pred_layer(sent_enc)
             latent = self.single_proj(sent_enc)
         logits = pred_layer(latent)
         out = {'logits': logits}

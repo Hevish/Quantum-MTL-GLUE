@@ -98,7 +98,6 @@ def main(USE_QUANTUM=True):
     import os
     from datetime import datetime
 
-    # Add this at the end of your main() function, after the macro-average calculation:
 
     # Save results to JSON file
     results_to_save = {

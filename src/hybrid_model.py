@@ -10,14 +10,7 @@ from my_quantum_circuit import QuantumCircuit
 class MTLModel(nn.Module):
     def __init__(self, vocab_size, tasks, hidden_size=768, dropout_rate=0.1,
                  device=None, latent_dim=30, QUANTUM=False, quantum_params=None):
-        """
-        MTL model toggling between classical heads and your PennyLane QuantumCircuit.
 
-        When QUANTUM=True, the quantum circuit's per-task outputs are returned directly
-        as the model logits (no extra classical decoder). Make sure your QuantumCircuit
-        returns per-task outputs shaped appropriately for each task (e.g. (B, num_classes))
-        or (B,) / (B,1) for single-output regression tasks.
-        """
         super(MTLModel, self).__init__()
 
         self.tasks = tasks
@@ -73,7 +66,7 @@ class MTLModel(nn.Module):
                 )
                 setattr(self, f'{task_name}_pred_layer', pred_layer)
 
-        # Quantum integration (no classical decoders — QC outputs are final logits)
+        # Quantum integration
         else:
             if quantum_params is None:
                 raise ValueError("quantum_params must be provided when QUANTUM=True.")
@@ -219,7 +212,6 @@ class MTLModel(nn.Module):
                 idx = self._quantum_task_order.index(task)
                 qout = qouts[idx]
 
-            # ensure proper dtype and device without adding layers
             qout = qout.to(self.device).float()
             # scale stsb outputs to [0,1] if regression
             if task == 'stsb':
@@ -249,7 +241,7 @@ class MTLModel(nn.Module):
 
             out = {'logits': qout}
 
-        # Classical branch (unchanged)
+        # Classical branch
         else:
             pred_layer = getattr(self, f'{task}_pred_layer')
             out_logits = pred_layer(latent)
@@ -265,7 +257,7 @@ class MTLModel(nn.Module):
             elif num_classes == 2:
                 loss = F.binary_cross_entropy_with_logits(out.get('logits').squeeze(-1), label.float())
             else:
-                # classification: out_logits must be (B, C)
+                # classification
                 loss = F.cross_entropy(out.get('logits'), label.long())
             out['loss'] = loss
 

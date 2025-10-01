@@ -18,7 +18,7 @@ GLUE_TASKS = {
         "input_format": "pair",
         "task_type": "classification"
     },
-    "stsb": {  # Fixed: changed from "sts-b" to "stsb"
+    "stsb": {
         "num_classes": 1,
         "metric": "spearmanr",
         "input_format": "pair",

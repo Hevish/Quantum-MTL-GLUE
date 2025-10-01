@@ -43,7 +43,7 @@ def train_glue_baselines_style(model, dataloaders, task_names, device=None, num_
     """Train model on multiple GLUE tasks using task sampling"""
 
     # Ensure model is in training mode
-    model.train()  # Add this line at the start
+    model.train()
 
     optimizer = torch.optim.Adam(model.parameters(), lr=2e-5)
 
